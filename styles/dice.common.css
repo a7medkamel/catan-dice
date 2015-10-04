@@ -1,0 +1,49 @@
+html {
+	width: 100%;
+}
+body {
+	width: 100%;
+	display: table;
+	text-align: center;
+	background-color: #fff;
+}
+
+.dice {
+	border: 2px solid black;
+	padding: 0.25em;
+	border-spacing: 0.25em;
+	width: 120pt;
+	height: 120pt;
+	display: table-cell;
+	text-align: center;
+}
+
+.dice img {
+	height: 90pt;
+}
+
+.die_table {
+	font-size : 100pt;
+	display: table;
+	border-spacing: 0.25em;
+}
+
+.time {
+	font-size : 90pt;
+}
+#timer_median {
+	padding-left: 20pt;
+	font-size : 35pt;
+}
+
+#dice_total {
+	background-color : #FCEDAE;
+}
+
+#dice_1 {
+	background-color: red;
+}
+
+#dice_2 {
+	background-color: yellow;
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="scripts/jquery.min.js"></script>
+		<script src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
+		<script src="scripts/jquery.timer.js"></script>
+		<script src="scripts/RGraph.common.core.js" ></script>
+		<script src="scripts/RGraph.line.js" ></script>
+		<script src="scripts/RGraph.bar.js" ></script>
+		<script src="scripts/random.js" ></script>
+		<script src="scripts/median.js" ></script>
+		<script src="scripts/buzz.js" ></script>
+		<script src="scripts/dice.graph.js" ></script>
+		<script src="scripts/dice.roll.js" ></script>
+
+		<link rel="stylesheet" href="styles/common.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="styles/ui-darkness/jquery-ui-1.8.16.custom.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="styles/dice.common.css" type="text/css" media="screen" />
+		
+		<script type="text/javascript">
+		//http://buzz.jaysalvat.com/documentation/buzz/
+		
+		jQuery(document).ready(function(){
+		
+			// init
+			var sound_pirate = new buzz.sound("audio/pirate.arrr.mp3");
+			var sound_boo = new buzz.sound("audio/boo-crowd-02.wav", {
+					loop: true
+				});
+			
+			//
+			$( "#sortable" ).sortable();
+			$( "#sortable" ).disableSelection();
+		
+			$("*[name='player.name']").keyup(function(l) {
+				if (l.keyCode == 13) {
+					var player = $("*[name='player.name']").val();
+					
+				}
+			});
+			
+		   /*var x, y = 0;
+		   $(document).mousemove(function(e){
+			  x = e.pageX;
+			  y = e.pageY;
+		   });*/ 
+			var max_seconds = 120;
+			var seconds_since_roll = 0;
+			
+			var timer = $.timer(function() {
+				seconds_since_roll ++;
+				var seconds_remaining = max_seconds - seconds_since_roll;
+				
+				var m = median(turn_spans);
+				if (seconds_remaining <= 0)
+				{
+					sound_boo.play();
+				}
+				else
+				{
+					sound_boo.stop();
+				}
+				
+				$("#timer").html(seconds_since_roll);
+				$("#timer_median").html("median: " + (m != null? m : "-"));
+				
+				//$(document).trigger('click');
+			});
+			timer.set({ time : 1000, autostart : false });
+		
+			$(document).click(function(e){
+				var die = roll(2);
+				var sum = 0;
+				$.each(die, function(index, value) { 
+				  $("#dice_" + (index + 1)).html(value);
+				  sum += value;
+				});
+				tally[sum]++;
+				$("#dice_total").html(sum);
+				
+				var die = roll(1);
+				var pirate_map = 
+				[
+					{ html : "<img src='imgs/pirate_ship.png' />", type : "p"},
+					{ html : "<img src='imgs/pirate_ship.png' />", type : "p"},
+					{ html : "<img src='imgs/pirate_ship.png' />", type : "p"},
+					{ html : "<span style='color:yellow'>y</span>", type : "y"},
+					{ html : "<span style='color:green'>g</span>", type : "g"},
+					{ html : "<span style='color:blue'>b</span>", type : "b"},
+				];
+				var pirate = pirate_map[die[0] - 1];
+
+				if (pirate.type === "p") {
+					sound_pirate.play();
+				}
+
+				$("#dice_priate").html(pirate.html);
+				timer.play();
+				
+				if (seconds_since_roll != 0) {
+					turn_spans.push(seconds_since_roll);
+				}
+				seconds_since_roll = 0;
+				
+				graph(jQuery.map(tally, function(n, i){return (n);}));
+			});
+			
+			tally = {};
+			turn_spans = [];
+			for (i = 2; i <= 12; i++) { tally[i] = 0;}
+			
+			var d = new Date();
+			random = new KISS07(d.getTime(), d.getSeconds());
+		})
+		</script>
+	</head>
+	<body>
+		<div class="die_table">
+			<div class="dice" id="dice_1">-</div>
+			<div class="dice" id="dice_2">-</div>
+			<div class="dice" id="dice_priate">-</div>
+			=
+			<div class="dice" id="dice_total">-</div>
+		</div>
+		<table>
+			<tr>
+				<td>
+					<div class="time"><span id="timer"></span><span id="timer_median"></span></div>
+					<canvas id="graph" width="475" height="250">[Please wait...]</canvas>
+				</td>
+				<td>
+					<!-- <div>
+						<label style="font-size: 25pt;">Name:</label> <input type="text" style="width: 400pt; font-size: 25pt;" name="player.name"/>
+						<ul id="sortable">
+							<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+						</ul>
+					</div>
+					-->
+				</td>
+			</tr>
+		</table>
+		
+	</body>
+</html>
